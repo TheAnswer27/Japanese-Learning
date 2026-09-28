@@ -59,7 +59,7 @@ export default function App() {
         {/* 頂部進度 */}
         <div className="flex justify-between items-center mb-6">
           <span className="px-3 py-1 text-xs font-semibold text-indigo-600 bg-indigo-50 rounded-full shadow-sm">
-            JLPT N3 核心單字 (MySQL 聯動)
+            JLPT N3 核心單字 (MySQL 聯動 openshift)
           </span>
           <span className="text-sm text-slate-500 font-medium">
             {currentIndex + 1} / {vocabList.length}

@@ -1,5 +1,6 @@
 // 定義後端 API 的基礎網址（開發環境對應本地端 3000 埠）
-const API_BASE_URL = 'http://localhost:3000/api';
+// 使用 Vite 環境變數，如果沒有則預設為你的 CRC 測試網址
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://japanese-backend-service-japanese-learning.apps-crc.testing/api';
 
 /**
  * 取得所有 N3 單字資料
