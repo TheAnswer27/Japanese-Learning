@@ -1,5 +1,5 @@
-# ---- 階段一：建置前端靜態檔案 ----
-FROM node:18-alpine AS builder
+# ---- 階段一：建置前端靜態檔案 (升級至 Node 20) ----
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
