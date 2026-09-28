@@ -66,7 +66,7 @@ export default function App() {
           </span>
         </div>
 
-        {/* 3D 卡片外框 (設定 perspective 視角深度) */}
+        {/* 3D 卡片外框 */}
         <div 
           className="relative h-72 w-full cursor-pointer"
           style={{ perspective: '1000px' }}
@@ -80,7 +80,7 @@ export default function App() {
               transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
             }}
           >
-            {/* 正面 */}
+            {/* 正面：對應資料庫的 kanji 與 kana */}
             <div 
               className="absolute inset-0 w-full h-full bg-white rounded-2xl border border-slate-200/80 p-8 flex flex-col justify-between shadow-md"
               style={{ 
@@ -93,16 +93,16 @@ export default function App() {
               </div>
               <div className="text-center">
                 <h2 className="text-4xl font-bold text-slate-800 mb-2 tracking-wide">
-                  {currentWord.word}
+                  {currentWord.kanji}
                 </h2>
-                <p className="text-slate-400 text-sm">({currentWord.reading})</p>
+                <p className="text-slate-400 text-sm">({currentWord.kana})</p>
               </div>
               <div className="text-center">
-                <span className="text-xs text-indigo-500 font-medium">正面：日語單字</span>
+                <span className="text-xs text-indigo-500 font-medium">級別：{currentWord.level || 'N3'}</span>
               </div>
             </div>
 
-            {/* 背面 */}
+            {/* 背面：對應資料庫的 meaning */}
             <div 
               className="absolute inset-0 w-full h-full bg-indigo-900 text-white rounded-2xl p-8 flex flex-col justify-between shadow-xl"
               style={{ 
@@ -120,12 +120,12 @@ export default function App() {
                   {currentWord.meaning}
                 </h3>
                 <div className="bg-indigo-950/60 p-3 rounded-xl border border-indigo-700/50 text-left">
-                  <p className="text-xs text-indigo-300 mb-1">例句：</p>
-                  <p className="text-sm text-indigo-100">{currentWord.example}</p>
+                  <p className="text-xs text-indigo-300 mb-1">提示：</p>
+                  <p className="text-sm text-indigo-100">對應資料庫欄位同步成功！</p>
                 </div>
               </div>
               <div className="text-center">
-                <span className="text-xs text-indigo-300">背面：釋義與例句</span>
+                <span className="text-xs text-indigo-300">背面：釋義與資訊</span>
               </div>
             </div>
           </div>
