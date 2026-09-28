@@ -1,8 +1,10 @@
-name: CI/CD Build and Push to GHCR
+name: CI/CD Build and Push to GHCR (Frontend)
 
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'frontend/**'
 
 permissions:
   contents: read
@@ -40,8 +42,10 @@ jobs:
     - name: Build and push multi-arch Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./frontend
+        file: ./frontend/Dockerfile
         push: true
-        platforms: linux/amd64,linux/arm64 # 關鍵：同時支援兩種架構！
+        platforms: linux/amd64,linux/arm64
         tags: |
           ghcr.io/${{ env.REPO_LOWER }}:latest
+          ghcr.io/${{ env.REPO_LOWER }}:${{ github.sha }}
