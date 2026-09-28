@@ -11,7 +11,7 @@ permissions:
   packages: write
 
 jobs:
-  build-and-push:
+  build-and-press:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,22 +30,12 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # 1. 設置 QEMU (支援跨平台模擬打包)
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-
-    # 2. 設置支援多架構的 Buildx 環境
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    # 3. 同時打包 amd64 與 arm64 雙架構映像檔並推送到雲端
-    - name: Build and push multi-arch Docker image
+    - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: ./frontend
         file: ./frontend/Dockerfile
         push: true
-        platforms: linux/amd64,linux/arm64
         tags: |
           ghcr.io/${{ env.REPO_LOWER }}:latest
           ghcr.io/${{ env.REPO_LOWER }}:${{ github.sha }}
