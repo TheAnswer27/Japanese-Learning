@@ -1,30 +1,55 @@
-import React, { useState } from 'react'
-
-const n3Vocabulary = [
-  { id: 1, word: '影響する', reading: 'えいきょうする', meaning: '影響', example: '環境に影響を与える。 (對環境造成影響。)' },
-  { id: 2, word: '緊張する', reading: 'きんちょうする', meaning: '緊張', example: '面接の前で緊張している。 (面試前很緊張。)' },
-  { id: 3, word: '複雑な', reading: 'ふくざつな', meaning: '複雜的', example: 'この問題は非常に複雑だ。 (這個問題非常複雜。)' },
-  { id: 4, word: '集中する', reading: 'しゅうちゅうする', meaning: '專注、集中', example: '勉強に集中する。 (專心讀書。)' },
-  { id: 5, word: '選択する', reading: 'せんたくする', meaning: '選擇', example: '自分の道を選択する。 (選擇自己的路。)' }
-]
+import React, { useState, useEffect } from 'react'
+import { fetchVocabularies } from './services/vocabService'
 
 export default function App() {
+  const [vocabList, setVocabList] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
 
-  const currentWord = n3Vocabulary[currentIndex]
+  // 當元件載入時，從後端 API 取得 MySQL 資料庫中的單字
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true)
+        const data = await fetchVocabularies()
+        setVocabList(data)
+      } catch (err) {
+        setError('無法載入單字資料，請確認後端或 MySQL 是否正常運作。')
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen text-slate-600 bg-slate-100 text-lg">載入中...</div>
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500 bg-slate-100 text-lg">{error}</div>
+  }
+
+  if (vocabList.length === 0) {
+    return <div className="flex justify-center items-center h-screen text-slate-600 bg-slate-100 text-lg">資料庫目前沒有單字資料</div>
+  }
+
+  const currentWord = vocabList[currentIndex]
 
   const handleNext = () => {
     setIsFlipped(false)
     setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % n3Vocabulary.length)
+      setCurrentIndex((prev) => (prev + 1) % vocabList.length)
     }, 150)
   }
 
   const handlePrev = () => {
     setIsFlipped(false)
     setTimeout(() => {
-      setCurrentIndex((prev) => (prev - 1 + n3Vocabulary.length) % n3Vocabulary.length)
+      setCurrentIndex((prev) => (prev - 1 + vocabList.length) % vocabList.length)
     }, 150)
   }
 
@@ -34,10 +59,10 @@ export default function App() {
         {/* 頂部進度 */}
         <div className="flex justify-between items-center mb-6">
           <span className="px-3 py-1 text-xs font-semibold text-indigo-600 bg-indigo-50 rounded-full shadow-sm">
-            JLPT N3 核心單字
+            JLPT N3 核心單字 (MySQL 聯動)
           </span>
           <span className="text-sm text-slate-500 font-medium">
-            {currentIndex + 1} / {n3Vocabulary.length}
+            {currentIndex + 1} / {vocabList.length}
           </span>
         </div>
 
