@@ -1,0 +1,32 @@
+# 1. 這條流水線（Pipeline）的名字，會顯示在 GitHub 網頁上
+name: Build Docker Image CI
+
+# 2. 觸發條件（Trigger）：什麼時候要自動執行這條流水線？
+on:
+  push:
+    branches: [ "main" ] # 當有人把程式碼推送到 main 分支時觸發
+
+# 3. 執行任務（Jobs）：這條流水線要跑哪些工作
+jobs:
+  build:
+    # 執行環境：租用 GitHub 提供的最新 Ubuntu 雲端虛擬機器來跑這個任務
+    runs-on: ubuntu-latest
+
+    # 4. 步驟（Steps）：在虛擬機器上依序執行的具體動作
+    steps:
+    
+    # 步驟一：把專案程式碼抓下來
+    - name: Checkout code
+      uses: actions/checkout@v4 # 使用 GitHub 官方的 checkout 工具，把 repository 的程式碼 clone 到虛擬機
+
+    # 步驟二：安裝與設定 Docker 編譯環境
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3 # 設定 Docker Buildx（支援多平台與高效能容器打包的工具）
+
+    # 步驟三：執行 Docker 打包
+    - name: Build Docker Image
+      uses: docker/build-push-action@v5 # 使用社群成熟的 Docker 打包動作
+      with:
+        context: .            # 指定 Dockerfile 所在的目錄（「.」代表目前專案根目錄）
+        push: false           # 暫時設定為 false：只在雲端機器上打包測試，先不推送到外部 Registry
+        tags: japanese-app:latest # 給這包打包出來的 Docker 映像檔上標籤（Tag）
