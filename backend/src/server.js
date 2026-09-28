@@ -22,7 +22,7 @@ app.get('/api/vocabulary', async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error('Database query error:', err);
-    res.status(500).json({ error: '無法取得單字資料庫內容' });
+    res.status(500).json({ error: '無法取得單字資料庫內容。' });
   }
 });
 
