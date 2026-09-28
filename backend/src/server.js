@@ -18,7 +18,7 @@ app.get('/api/health', (req, res) => {
 // 2. 取得所有 N3 單字的 API
 app.get('/api/vocabulary', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM vocabulary');
+    const [rows] = await pool.query('SELECT * FROM vocabularies');
     res.json(rows);
   } catch (err) {
     console.error('Database query error:', err);
