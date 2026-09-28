@@ -1,32 +1,46 @@
-# 1. 這條流水線（Pipeline）的名字，會顯示在 GitHub 網頁上
-name: Build Docker Image CI
+name: CI/CD Build and Push to GHCR
 
-# 2. 觸發條件（Trigger）：什麼時候要自動執行這條流水線？
 on:
   push:
-    branches: [ "main" ] # 當有人把程式碼推送到 main 分支時觸發
+    branches: [ "main" ]
 
-# 3. 執行任務（Jobs）：這條流水線要跑哪些工作
+# 定義這條流水線需要的權限（允許寫入 GitHub Container Registry）
+permissions:
+  contents: read
+  packages: write
+
 jobs:
-  build:
-    # 執行環境：租用 GitHub 提供的最新 Ubuntu 雲端虛擬機器來跑這個任務
+  build-and-push:
     runs-on: ubuntu-latest
 
-    # 4. 步驟（Steps）：在虛擬機器上依序執行的具體動作
     steps:
-    
-    # 步驟一：把專案程式碼抓下來
     - name: Checkout code
-      uses: actions/checkout@v4 # 使用 GitHub 官方的 checkout 工具，把 repository 的程式碼 clone 到虛擬機
+      uses: actions/checkout@v4
 
-    # 步驟二：安裝與設定 Docker 編譯環境
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3 # 設定 Docker Buildx（支援多平台與高效能容器打包的工具）
-
-    # 步驟三：執行 Docker 打包
-    - name: Build Docker Image
-      uses: docker/build-push-action@v5 # 使用社群成熟的 Docker 打包動作
+    # 1. 登入 GitHub 內建的 Container Registry (GHCR)
+    - name: Log in to the Container Registry
+      uses: docker/login-action@v3
       with:
-        context: .            # 指定 Dockerfile 所在的目錄（「.」代表目前專案根目錄）
-        push: false           # 暫時設定為 false：只在雲端機器上打包測試，先不推送到外部 Registry
-        tags: japanese-app:latest # 給這包打包出來的 Docker 映像檔上標籤（Tag）
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }} # GitHub 會自動提供安全的 Token
+
+    # 2. 將專案名稱轉為小寫（GitHub 要求 repository 名稱必須為小寫）
+    - name: Lowercase Repository Name
+      id: string_case
+      uses: volpg/lowercase-action@v1 # 或者透過環境變數處理，我們也可以用標準寫法
+      with:
+        text: ${{ github.repository }}
+
+    # 3. 建立 Docker Buildx 環境
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # 4. 打包 Docker Image 並直接推送到 GHCR 雲端倉庫
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true # 這次改為 true！打包完直接推送到雲端
+        tags: |
+          ghcr.io/${{ github.repository }}:latest
