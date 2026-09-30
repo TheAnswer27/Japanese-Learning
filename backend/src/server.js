@@ -12,7 +12,7 @@ app.use(express.json());
 
 // 1. 健康檢查 API
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'N3 Backend is running successfully!' });
+  res.json({ status: 'ok', message: 'N3 Backend is running successfully with trivy!' });
 });
 
 // 2. 取得所有 N3 單字的 API

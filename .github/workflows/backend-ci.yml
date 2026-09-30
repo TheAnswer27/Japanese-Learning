@@ -30,6 +30,27 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # 1. 先在 Runner 本地建置映像檔（載入至 Docker daemon 供掃描使用）
+      - name: Build Docker image locally
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          load: true
+          tags: |
+            ghcr.io/${{ env.REPO_LOWER }}-backend:latest
+            ghcr.io/${{ env.REPO_LOWER }}-backend:${{ github.sha }}
+
+      # 2. 🛡️ DevSecOps 核心：使用 Trivy 掃描容器映像檔漏洞
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ env.REPO_LOWER }}-backend:latest'
+          format: 'table'
+          exit-code: '0' # 設為 '0' 僅印出報告不中斷；若改為 '1' 則會強制阻擋含有高危漏洞(CRITICAL/HIGH)的映像檔推送
+          severity: 'CRITICAL,HIGH'
+      
+      # 3. 掃描完成後，將映像檔正式推送到 GHCR
       - name: Build and Push Backend Docker Image
         uses: docker/build-push-action@v5
         with:
