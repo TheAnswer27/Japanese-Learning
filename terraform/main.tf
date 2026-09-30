@@ -57,7 +57,7 @@ resource "kubernetes_stateful_set" "mysql" {
           }
           env {
             name  = "MYSQL_DATABASE"
-            value = "n3_vocab_db" # 對應 Node.js 後端要求的資料庫名稱
+            value = "japanese_db" # 對應 Node.js 後端要求的資料庫名稱
           }
           volume_mount {
             name       = "mysql-data"
